@@ -3,9 +3,10 @@ import { render as tlRender, fireEvent, cleanup, act, screen } from '@testing-li
 import '@testing-library/jest-dom';
 
 import RemoteSupportPage from './src/remoteSupportPage';
-import { getSession, openSession, closeSession } from './src/remoteSupportApi';
+import { getSession, openSession, closeSession , hasInternet } from './src/remoteSupportApi';
 import { ReactQueryCacheProvider } from 'react-query';
 import queryCache from 'utils/queryCache';
+import waitForExpect from 'wait-for-expect';
 
 jest.mock('./src/remoteSupportApi');
 
@@ -25,6 +26,7 @@ describe('remote support page', () => {
 			({ rw_ssh: 'ssh -p2222 test_rw_token@test_host', ro_ssh: 'ssh -p2222 test_ro_token@test_host'})
 		);
 		openSession.mockImplementation(async () => null);
+		hasInternet.mockImplementation(async () => true);
 		closeSession.mockImplementation(async () => null);
 	});
 
@@ -77,4 +79,54 @@ describe('remote support page', () => {
 		render(<RemoteSupportPage />);
 		expect(await screen.findByRole('button', {name: /show console/i})).toBeEnabled();
 	});
+
+
+	it.skip('shows connection guide to hotspot when there is no internet', async () => {
+		hasInternet.mockImplementation(async () => false);
+		render(<RemoteSupportPage />);
+		expect(await screen.findByText('enable remote access')).toBeInTheDocument();
+	});
+
+	it.skip('shows share internet with a mobile screen after next button was clicked', async() => {
+		hasInternet.mockImplementation(async () => false);
+		render(<RemoteSupportPage />);
+		const createNextButton = await screen.findByRole('button', {name: /next/i });
+		fireEvent.click(createNextButton);
+		await waitForExpect(() => {
+			expect(route).toHaveBeenCalledWith('/hotspot');
+		})
+	});
+
+	it.skip('shows WiFi config screen when see help link was clicked', async () => {
+		hasInternet.mockImplementation(async () => false);
+		render(<RemoteSupportPage />);
+		const seeHelpButton = await screen.findByRole('button', {name: /see help/i });
+		fireEvent.click(seeHelpButton);
+		await waitForExpect(() => {
+			expect(route).toHaveBeenCalledWith('/help');
+		})	
+	});
+
+	it.skip('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
+		//TODO check if the next declaration is ok or i need something like: false, { throw new Error()}
+		hasInternet.mockImplementationOnce(() => false)
+		hasInternet.mockImplementation(async() => { throw new Error() })
+		render(<RemoteSupportPage />);
+		//doubt: is it ok to declare it like this or is it better as the 87 line example
+		expect(await screen.findByText(
+			/Internet access denied/i)).toBeInTheDocument();
+		const createVerifyButton= await screen.findByRole('button', {name: /verify/i});
+		fireEvent.click(createVerifyButton);
+		expect(await screen.findByText(/something went wrong, there's no internet access/i)).toBeVisible();
+	});
+
+	it.skip('shows a successful message when verify button is clicked and internet connection is back', async() => {
+		hasInternet.mockImplementation(async() => { throw new Success()} )
+		render(<RemoteSupportPage />)
+		const createVerifyButton = await screen.findByRole('button', {name: /verify/i });
+		fireEvent.click(createVerifyButton);
+		expect(await screen.findByText(/Wi-fi hotspot connected successfully /i)).toBeVisible();
+	});
+
+		
 });

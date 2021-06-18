@@ -1,3 +1,5 @@
+import { scanningForNetworks } from 'plugins/lime-plugin-fbw/fbw.scan.stories';
+import { searchNetworks } from 'plugins/lime-plugin-fbw/src/api';
 import api from 'utils/uhttpd.service';
 
 jest.mock('utils/uhttpd.service')
