@@ -81,10 +81,11 @@ describe('remote support page', () => {
 	});
 
 
-	it.skip('shows connection guide to hotspot when there is no internet', async () => {
+	it('shows connection guide to hotspot when there is no internet', async () => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
-		expect(await screen.findByText('enable remote access')).toBeInTheDocument();
+		expect(await screen.findByText(/Ask for remote support/i)).toBeInTheDocument();
+		
 	});
 
 	it.skip('shows share internet with a mobile screen after next button was clicked', async() => {

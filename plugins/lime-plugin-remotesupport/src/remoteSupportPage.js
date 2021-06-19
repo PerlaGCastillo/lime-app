@@ -1,9 +1,10 @@
 import { h } from 'preact';
 import { route } from 'preact-router';
-import { useSession, useOpenSession, useCloseSession } from './remoteSupportQueries';
+import { useSession, useOpenSession, useCloseSession,  } from './remoteSupportQueries';
 import Loading from 'components/loading';
 import I18n from 'i18n-js';
 import style from './style.less';
+import { hasInternet } from './remoteSupportApi';
 
 const RemoteSupportPage = () => {
 	const {data: session, isLoading: loadingSession, isError} = useSession({
@@ -11,6 +12,7 @@ const RemoteSupportPage = () => {
 	});
 	const [openSession, openStatus] = useOpenSession();
 	const [closeSession, closeStatus] = useCloseSession();
+	//const [hasInternet, hasInternetStatus] = useHasInternet();
 
 	function onShowConsole() {
 		route('console');
@@ -29,7 +31,8 @@ const RemoteSupportPage = () => {
 	return <RemoteSupportPage_
 		session={session} openError={openStatus.isError}
 		isSubmitting={openStatus.isLoading || closeStatus.isLoading}
-		onOpenSession={openSession} onCloseSession={closeSession} onShowConsole={onShowConsole} />;
+		//hasInternet={hasInternetStatus.isError || hasInternet } onHasInternet={hasInternet}
+		onOpenSession={openSession} onCloseSession={closeSession} onShowConsole={onShowConsole}	/>;
 };
 
 
@@ -70,6 +73,36 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 		{isSubmitting &&
 			<Loading />
 		}
+		
 	</div>
 
 export default RemoteSupportPage;
+
+
+/*
+{!hasInternet &&
+			<div>
+				<div>
+					<h4>{I18n.t("Enable remote access")}</h4>
+					<p>{I18n.t("The node does not have internet access")}</p>
+					<p>{I18n.t("You can share it internet with your mobile just click on next button")}</p>
+					<button onClick={onOpenSession}>{I18n.t("Next")}</button>
+				</div>
+				<div>
+					<h4>{I18n.t("Share internet with a mobile")}</h4>
+					<p>{I18n.t("tutorial text")}</p>
+					<button onClick={onSeeHelp}>{I18n.t("See help")}</button>
+					<button onClick={onHasInternet}>{I18n.t("Verify")}</button>
+					<p>{I18n.t("Internet access denied")}</p>
+					<p>{I18n.t("something went wrong, there's no internet access")}</p>
+				</div>
+			</div>
+		}
+		{hasInternet &&
+			<div>
+				<p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
+				<button onClick={onHasInternet}>{I18n.t("Verify")}</button>
+			</div>
+		}
+		
+*/ 
