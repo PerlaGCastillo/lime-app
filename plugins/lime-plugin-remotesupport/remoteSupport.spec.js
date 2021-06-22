@@ -25,6 +25,7 @@ describe('remote support page', () => {
 		getSession.mockImplementation(async () =>
 			({ rw_ssh: 'ssh -p2222 test_rw_token@test_host', ro_ssh: 'ssh -p2222 test_ro_token@test_host'})
 		);
+		//render(<RemoteSupportPage />);
 		openSession.mockImplementation(async () => null);
 		hasInternet.mockImplementation(async () => true);
 		closeSession.mockImplementation(async () => null);
@@ -60,7 +61,7 @@ describe('remote support page', () => {
 			.mockImplementationOnce(async () => null)
 			.mockImplementationOnce(async () =>
 				({ rw_ssh: 'ssh -p2222 test_rw_token@test_host', ro_ssh: 'ssh -p2222 test_ro_token@test_host'}));
-		render(<RemoteSupportPage />)
+		render(<RemoteSupportPage />);
 		const createButton = await screen.findByRole('button', {name: /create session/i });
 		fireEvent.click(createButton);
 		expect(await screen.findByText('ssh -p2222 test_rw_token@test_host')).toBeInTheDocument();
@@ -69,7 +70,7 @@ describe('remote support page', () => {
 	it('show an error when open session fails', async() => {
 		getSession.mockImplementation(async() => null);
 		openSession.mockImplementation(async() => { throw new Error() })
-		render(<RemoteSupportPage />)
+		render(<RemoteSupportPage />);
 		const createButton = await screen.findByRole('button', {name: /create session/i });
 		fireEvent.click(createButton);
 		expect(await screen.findByText(/Cannot connect to the remote support server/i)).toBeVisible();
@@ -80,15 +81,14 @@ describe('remote support page', () => {
 		expect(await screen.findByRole('button', {name: /show console/i})).toBeEnabled();
 	});
 
-
+	
 	it('shows connection guide to hotspot when there is no internet', async () => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
-		expect(await screen.findByText(/Ask for remote support/i)).toBeInTheDocument();
-		
+		expect(await screen.findByText(/This node has not internet connection/i)).toBeInTheDocument();	
 	});
 
-	it.skip('shows share internet with a mobile screen after next button was clicked', async() => {
+	it('shows share internet with a mobile screen after next button was clicked', async() => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
 		const createNextButton = await screen.findByRole('button', {name: /next/i });
@@ -98,7 +98,7 @@ describe('remote support page', () => {
 		})
 	});
 
-	it.skip('shows WiFi config screen when see help link was clicked', async () => {
+	it('shows WiFi config screen when see help link was clicked', async () => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
 		const seeHelpButton = await screen.findByRole('button', {name: /see help/i });
@@ -108,12 +108,10 @@ describe('remote support page', () => {
 		})	
 	});
 
-	it.skip('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
-		//TODO check if the next declaration is ok or i need something like: false, { throw new Error()}
+	it('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
 		hasInternet.mockImplementationOnce(() => false)
 		hasInternet.mockImplementation(async() => { throw new Error() })
 		render(<RemoteSupportPage />);
-		//doubt: is it ok to declare it like this or is it better as the 87 line example
 		expect(await screen.findByText(
 			/Internet access denied/i)).toBeInTheDocument();
 		const createVerifyButton= await screen.findByRole('button', {name: /verify/i});
@@ -121,13 +119,11 @@ describe('remote support page', () => {
 		expect(await screen.findByText(/something went wrong, there's no internet access/i)).toBeVisible();
 	});
 
-	it.skip('shows a successful message when verify button is clicked and internet connection is back', async() => {
+	it('shows a successful message when verify button is clicked and internet connection is back', async() => {
 		hasInternet.mockImplementation(async() => { throw new Success()} )
-		render(<RemoteSupportPage />)
+		render(<RemoteSupportPage />);
 		const createVerifyButton = await screen.findByRole('button', {name: /verify/i });
 		fireEvent.click(createVerifyButton);
 		expect(await screen.findByText(/Wi-fi hotspot connected successfully /i)).toBeVisible();
 	});
-
-		
 });

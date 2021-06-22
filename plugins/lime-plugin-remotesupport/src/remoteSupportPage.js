@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { route } from 'preact-router';
-import { useSession, useOpenSession, useCloseSession,  } from './remoteSupportQueries';
+import { useSession, useOpenSession, useCloseSession } from './remoteSupportQueries';
 import Loading from 'components/loading';
 import I18n from 'i18n-js';
 import style from './style.less';
@@ -12,7 +12,6 @@ const RemoteSupportPage = () => {
 	});
 	const [openSession, openStatus] = useOpenSession();
 	const [closeSession, closeStatus] = useCloseSession();
-	//const [hasInternet, hasInternetStatus] = useHasInternet();
 
 	function onShowConsole() {
 		route('console');
@@ -31,7 +30,6 @@ const RemoteSupportPage = () => {
 	return <RemoteSupportPage_
 		session={session} openError={openStatus.isError}
 		isSubmitting={openStatus.isLoading || closeStatus.isLoading}
-		//hasInternet={hasInternetStatus.isError || hasInternet } onHasInternet={hasInternet}
 		onOpenSession={openSession} onCloseSession={closeSession} onShowConsole={onShowConsole}	/>;
 };
 
@@ -39,7 +37,7 @@ const RemoteSupportPage = () => {
 export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false, onOpenSession, onCloseSession, onShowConsole}) =>
 	<div class="d-flex flex-grow-1 flex-column container container-padded">
 		<h4>{I18n.t("Ask for remote support")}</h4>
-		{!session &&
+		{session &&
 			<div>
 				<p>{I18n.t("There's no open session for remote support. Click at Create Session to begin one")}</p>
 				<button onClick={onOpenSession}>{I18n.t("Create Session")}</button>
@@ -73,22 +71,15 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 		{isSubmitting &&
 			<Loading />
 		}
-		
-	</div>
-
-export default RemoteSupportPage;
-
-
-/*
-{!hasInternet &&
+		{hasInternet &&
 			<div>
-				<div>
-					<h4>{I18n.t("Enable remote access")}</h4>
-					<p>{I18n.t("The node does not have internet access")}</p>
+				<h4>{I18n.t("Enable Remote Access")}</h4>
+				<div class={style.section}>
+					<p>{I18n.t("This node has not internet connection")}</p>
 					<p>{I18n.t("You can share it internet with your mobile just click on next button")}</p>
 					<button onClick={onOpenSession}>{I18n.t("Next")}</button>
 				</div>
-				<div>
+				<div class={style.section}>
 					<h4>{I18n.t("Share internet with a mobile")}</h4>
 					<p>{I18n.t("tutorial text")}</p>
 					<button onClick={onSeeHelp}>{I18n.t("See help")}</button>
@@ -100,9 +91,13 @@ export default RemoteSupportPage;
 		}
 		{hasInternet &&
 			<div>
+				<div>
 				<p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
 				<button onClick={onHasInternet}>{I18n.t("Verify")}</button>
 			</div>
+			</div>
 		}
-		
-*/ 
+
+	</div>
+
+export default RemoteSupportPage;
