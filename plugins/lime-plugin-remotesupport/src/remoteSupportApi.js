@@ -2,7 +2,6 @@ import api from 'utils/uhttpd.service';
 
 export function hasInternet(){
 	return api.call("tmate", "has_internet", {})
-	//TODO add connection data
 }
 
 export function getSession() {

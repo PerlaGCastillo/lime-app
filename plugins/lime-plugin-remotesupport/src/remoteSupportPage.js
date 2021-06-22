@@ -37,7 +37,7 @@ const RemoteSupportPage = () => {
 export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false, onOpenSession, onCloseSession, onShowConsole}) =>
 	<div class="d-flex flex-grow-1 flex-column container container-padded">
 		<h4>{I18n.t("Ask for remote support")}</h4>
-		{session &&
+		{!session &&
 			<div>
 				<p>{I18n.t("There's no open session for remote support. Click at Create Session to begin one")}</p>
 				<button onClick={onOpenSession}>{I18n.t("Create Session")}</button>
@@ -79,24 +79,24 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 					<p>{I18n.t("You can share it internet with your mobile just click on next button")}</p>
 					<button onClick={onOpenSession}>{I18n.t("Next")}</button>
 				</div>
-				<div class={style.section}>
+				{/* <div class={style.section}>
 					<h4>{I18n.t("Share internet with a mobile")}</h4>
 					<p>{I18n.t("tutorial text")}</p>
 					<button onClick={onSeeHelp}>{I18n.t("See help")}</button>
 					<button onClick={onHasInternet}>{I18n.t("Verify")}</button>
 					<p>{I18n.t("Internet access denied")}</p>
 					<p>{I18n.t("something went wrong, there's no internet access")}</p>
-				</div>
+				</div> */}
 			</div>
 		}
-		{hasInternet &&
+		{/* {hasInternet &&
 			<div>
 				<div>
 				<p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
 				<button onClick={onHasInternet}>{I18n.t("Verify")}</button>
 			</div>
 			</div>
-		}
+		} */}
 
 	</div>
 

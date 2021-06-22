@@ -88,7 +88,7 @@ describe('remote support page', () => {
 		expect(await screen.findByText(/This node has not internet connection/i)).toBeInTheDocument();	
 	});
 
-	it('shows share internet with a mobile screen after next button was clicked', async() => {
+	it.skip('shows share internet with a mobile screen after next button was clicked', async() => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
 		const createNextButton = await screen.findByRole('button', {name: /next/i });
@@ -98,7 +98,7 @@ describe('remote support page', () => {
 		})
 	});
 
-	it('shows WiFi config screen when see help link was clicked', async () => {
+	it.skip('shows WiFi config screen when see help link was clicked', async () => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
 		const seeHelpButton = await screen.findByRole('button', {name: /see help/i });
@@ -108,7 +108,7 @@ describe('remote support page', () => {
 		})	
 	});
 
-	it('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
+	it.skip('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
 		hasInternet.mockImplementationOnce(() => false)
 		hasInternet.mockImplementation(async() => { throw new Error() })
 		render(<RemoteSupportPage />);
@@ -119,7 +119,7 @@ describe('remote support page', () => {
 		expect(await screen.findByText(/something went wrong, there's no internet access/i)).toBeVisible();
 	});
 
-	it('shows a successful message when verify button is clicked and internet connection is back', async() => {
+	it.skip('shows a successful message when verify button is clicked and internet connection is back', async() => {
 		hasInternet.mockImplementation(async() => { throw new Success()} )
 		render(<RemoteSupportPage />);
 		const createVerifyButton = await screen.findByRole('button', {name: /verify/i });
