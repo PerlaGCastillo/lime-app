@@ -87,15 +87,13 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 					<button onClick={hasInternet}>{I18n.t("Verify")}</button>
 					<p>{I18n.t("Internet access denied")}</p>
 					<p>{I18n.t("something went wrong, there's no internet access")}</p>
-				</div>
-			</div>
-		}
+				</div> 
+			</div> 
+		}	
 		{hasInternet &&
 			<div>
-				<div>
 				<p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
 				{/* <button onClick={hasInternet}>{I18n.t("Verify")}</button> */}
-			</div>
 			</div>
 		} 
 	</div>
