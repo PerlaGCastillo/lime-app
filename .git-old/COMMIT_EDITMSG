@@ -1,0 +1,11 @@
+testing hotspot
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch hotspot
+# Changes to be committed:
+#	modified:   plugins/lime-plugin-remotesupport/remoteSupport.spec.js
+#	modified:   plugins/lime-plugin-remotesupport/src/remoteSupportApi.js
+#	modified:   plugins/lime-plugin-remotesupport/src/remoteSupportPage.js
+#
