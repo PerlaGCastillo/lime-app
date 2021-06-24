@@ -1,10 +1,9 @@
 import { h } from 'preact';
 import { route } from 'preact-router';
-import { useSession, useOpenSession, useCloseSession } from './remoteSupportQueries';
+import { useSession, useOpenSession, useCloseSession, useHasInternet } from './remoteSupportQueries';
 import Loading from 'components/loading';
 import I18n from 'i18n-js';
 import style from './style.less';
-import { hasInternet } from './remoteSupportApi';
 
 const RemoteSupportPage = () => {
 	const {data: session, isLoading: loadingSession, isError} = useSession({
@@ -12,6 +11,7 @@ const RemoteSupportPage = () => {
 	});
 	const [openSession, openStatus] = useOpenSession();
 	const [closeSession, closeStatus] = useCloseSession();
+	const {data: hasInternet } = useHasInternet();
 
 	function onShowConsole() {
 		route('console');
@@ -30,11 +30,12 @@ const RemoteSupportPage = () => {
 	return <RemoteSupportPage_
 		session={session} openError={openStatus.isError}
 		isSubmitting={openStatus.isLoading || closeStatus.isLoading}
-		onOpenSession={openSession} onCloseSession={closeSession} onShowConsole={onShowConsole}	/>;
+		onOpenSession={openSession} onCloseSession={closeSession} onShowConsole={onShowConsole}	
+		hasInternet={hasInternet} />;
 };
 
 
-export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false, onOpenSession, onCloseSession, onShowConsole}) =>
+export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false, onOpenSession, onCloseSession, onShowConsole, hasInternet}) =>
 	<div class="d-flex flex-grow-1 flex-column container container-padded">
 		<h4>{I18n.t("Ask for remote support")}</h4>
 		{!session &&
@@ -72,13 +73,13 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 			<Loading />
 		}
 		//TODO change it for !hasInternet and make it works
-		{hasInternet &&
+		{!hasInternet &&
 			<div>
 				<h4>{I18n.t("Enable Remote Access")}</h4>
 				<div class={style.section}>
 					<p>{I18n.t("This node has not internet connection")}</p>
 					<p>{I18n.t("You can share it internet with your mobile just click on next button")}</p>
-					<button onClick={hasInternet}>{I18n.t("Next")}</button>
+					<button onClick={route("/hotspot")}>{I18n.t("Next")}</button>
 				</div>
 				<div class={style.section}>
 					<h5>{I18n.t("Share internet with a mobile")}</h5>

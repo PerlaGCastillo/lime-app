@@ -84,9 +84,7 @@ describe('remote support page', () => {
 	
 	it('shows connection guide to hotspot when there is no internet', async () => {
 		hasInternet
-			.mockImplementationOnce(async () => false)
-			// .mockImplementationOnce(async () =>
-			// 	({  }));
+			.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
 		expect(await screen.findByText(/This node has not internet connection/i)).toBeInTheDocument();	
 	});
@@ -94,14 +92,13 @@ describe('remote support page', () => {
 	it('shows share internet with a mobile screen after next button was clicked', async() => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
-		expect(await screen.findByRole('button', {name: /next/i })).toBeEnabled();
-		/**
-		 * const createNextButton = await screen.findByRole('button', {name: /next/i });
+		//expect(await screen.findByRole('button', {name: /next/i })).toBeEnabled();
+		const createNextButton = await screen.findByRole('button', {name: /next/i });
 		fireEvent.click(createNextButton);
 		await waitForExpect(() => {
 			expect(route).toHaveBeenCalledWith('/hotspot');
 		})
-		 */
+		 
 	});
 
 	it('shows WiFi config screen when see help link was clicked', async () => {
