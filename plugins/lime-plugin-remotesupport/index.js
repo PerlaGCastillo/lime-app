@@ -9,7 +9,7 @@ export default {
 	menu: () => <a href={'#/remotesupport'}>{I18n.t('Remote Support')}</a>,
 	isCommunityProtected: true,
 	additionalProtectedRoutes: [
-		['console', ConsoleView]
+		['console', ConsoleView],
+		['hotspot', hotspotView]
 	]
 }
-
