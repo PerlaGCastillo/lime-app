@@ -6,11 +6,42 @@ jest.mock('utils/uhttpd.service')
 
 import { getSession, openSession, closeSession } from './remoteSupportApi';
 
-
 beforeEach(() => {
     api.call.mockClear();
     api.call.mockImplementation(async () => ({ status: 'ok' }));
 })
+/* 
+describe('hasInternet', () => {
+    it('calls the expected endpoint', async () => {
+        await hasInternet();
+        expect(api.call).toBeCalledWith('tmate', 'has_internet', {});
+    })
+
+    it('resolves to internet status when there is a connected node', async () => {
+        const hasInternetData={
+            //TODO
+        };
+        api.call.mockImplementation(async () => (
+            {
+                status: 'ok',
+                session: hasInternetData,
+            }));
+        let session = await hasInternet();
+        expect(session).toEqual(hasInternetData);
+    });
+
+    it('resolves to null when there is no internet', async () => {
+        const hasInternetData = 'this node has not internet connection';
+        api.call.mockImplementation(async () => (
+            {
+                status: 'ok',
+                session: hasInternetData,
+            }));
+        let session = await hasInternet();
+        expect(session).toBeNull();
+    });
+});
+ */
 
 describe('getSession', () => {
     it('calls the expected endpoint', async () => {
