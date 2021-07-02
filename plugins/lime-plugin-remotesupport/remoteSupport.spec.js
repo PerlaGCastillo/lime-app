@@ -97,24 +97,23 @@ describe('remote support page', () => {
 		
 	});
 
-	it('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
+	it.skip('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
 		hasInternet.mockImplementationOnce(() => false)
 		hasInternet.mockImplementation(async() => { throw new Error() })
 		render(<RemoteSupportPage />);
 		expect(await screen.findByText(/Internet access denied/i)).toBeInTheDocument();
-		expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();
 		//expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();
-		 const createVerifyButton= await screen.findByRole('button', {name: /verify/i});
-		 fireEvent.click(createVerifyButton);
-		//expect(await screen.findByText(/something went wrong, there's no internet access/i)).toBeVisible();
+		const createVerifyButton= await screen.findByRole('button', {name: /verify/i});
+		fireEvent.click(createVerifyButton);
+		expect(await screen.findByText(/something went wrong, there's no internet access/i)).toBeVisible();
 	});
 
-	it('shows a successful message when verify button is clicked and internet connection is back', async() => {
+	it.skip('shows a successful message when verify button is clicked and internet connection is back', async() => {
 		hasInternet.mockImplementation(async() => { throw new Success()} )
 		render(<RemoteSupportPage />);
-		expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();
-		// const createVerifyButton = await screen.findByRole('button', {name: /verify/i });
-		// fireEvent.click(createVerifyButton);
-		// expect(await screen.findByText(/Wi-fi hotspot connected successfully /i)).toBeVisible();
+		//expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();
+		const createVerifyButton = await screen.findByRole('button', {name: /verify/i });
+		fireEvent.click(createVerifyButton);
+		expect(await screen.findByText(/Wi-fi hotspot connected successfully /i)).toBeVisible();
 	});
 });

@@ -10,6 +10,7 @@ export default {
 	isCommunityProtected: true,
 	additionalProtectedRoutes: [
 		['console', ConsoleView],
-		['hotspot', hotspotView]
+		['hotspot', hotspotView],
+		['shareinternet', shareInternetView]
 	]
 }

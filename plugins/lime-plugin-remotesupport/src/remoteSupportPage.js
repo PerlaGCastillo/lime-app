@@ -72,7 +72,7 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 		{isSubmitting &&
 			<Loading />
 		}
-		//TODO change it for !hasInternet and make it works
+		//TODO make it works
 		{!hasInternet &&
 			<div>
 				<h4>{I18n.t("Enable Remote Access")}</h4>
@@ -84,7 +84,7 @@ export const RemoteSupportPage_ = ({session, openError=false, isSubmitting=false
 				<div class={style.section}>
 					<h5>{I18n.t("Share internet with a mobile")}</h5>
 					<p>{I18n.t("tutorial text")}</p>
-					<button class={style.btnDanger} onClick={hasInternet}>{I18n.t("See help")}</button>
+					<button onClick={hasInternet}>{I18n.t("See help")}</button>
 					<button onClick={hasInternet}>{I18n.t("Verify")}</button>
 					<p>{I18n.t("Internet access denied")}</p>
 					<p>{I18n.t("something went wrong, there's no internet access")}</p>
