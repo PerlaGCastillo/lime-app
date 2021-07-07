@@ -2,6 +2,8 @@ import {h} from 'preact';
 import I18n from 'i18n-js';
 import RemoteSupportPage from './src/remoteSupportPage';
 import ConsoleView from './src/consoleView';
+import nextHotspotView from './src/hotspotView';
+
 
 export default {
 	name: 'remotesupport',
@@ -10,7 +12,6 @@ export default {
 	isCommunityProtected: true,
 	additionalProtectedRoutes: [
 		['console', ConsoleView],
-		['hotspot', hotspotView],
-		['shareinternet', shareInternetView]
+		['nextHotspotView', nextHotspotView]
 	]
 }

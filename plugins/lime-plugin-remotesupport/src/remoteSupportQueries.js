@@ -7,6 +7,13 @@ export function useHasInternet() {
 	return useQuery(["tmate", "has_internet"], hasInternet);
 }
 
+export function useVerifyInternet() {
+	return useMutation(hasInternet, {
+		onSuccess: () => queryCache.invalidateQueries(["tmate", "has_internet"]),
+		onError: () => queryCache.setQueryData(["tmate", "has_internet"], null)
+	})
+}
+
 export function useSession(queryConfig) {
 	return useQuery(["tmate", "get_session"], getSession, queryConfig);
 }

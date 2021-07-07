@@ -7,6 +7,9 @@ import { getSession, openSession, closeSession , hasInternet } from './src/remot
 import { ReactQueryCacheProvider } from 'react-query';
 import queryCache from 'utils/queryCache';
 import waitForExpect from 'wait-for-expect';
+import { route } from 'preact-router';
+import nextHotspotView, { hasInternet_ } from './src/hotspotView';
+import { showHelp } from 'yargs';
 
 jest.mock('./src/remoteSupportApi');
 
@@ -22,7 +25,9 @@ describe('remote support page', () => {
 	})
 
 	beforeEach(() => {
-		hasInternet.mockImplementation(async () => true);
+		hasInternet.mockImplementation(async () => 
+			({ online: 'Wi-Fi successfully connected', offline: 'The node can´t connect to the network'})
+		);
 		getSession.mockImplementation(async () =>
 			({ rw_ssh: 'ssh -p2222 test_rw_token@test_host', ro_ssh: 'ssh -p2222 test_ro_token@test_host'})
 		);
@@ -71,44 +76,50 @@ describe('remote support page', () => {
 		expect(await screen.findByRole('button', {name: /show console/i})).toBeEnabled();
 	});
 
-	//HOTSPOT
 	it('shows connection guide to hotspot when there is no internet', async () => {
-		hasInternet
-			.mockImplementation(async () => false);
+		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
 		expect(await screen.findByText(/This node has not internet connection/i)).toBeInTheDocument();	
 	});
-
-	it('shows share internet with a mobile screen  tutorial after next button was clicked', async() => {
+	
+	it('shows share internet with a mobile screen tutorial after next button was clicked', async() => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
-		expect(await screen.findByRole('button', {name: /next/i })).toBeEnabled();
-		//const createNextButton = await screen.findByRole('button', {name: /next/i });
-		//fireEvent.click(createNextButton);
-		//await waitForExpect(() => {
-		//	expect(route).toHaveBeenCalledWith('/hotspot');
-		//})
-		 
+		const onNextHotspotView = await screen.findByRole('button', {name: /next/i});
+		fireEvent.click(onNextHotspotView);
+		await waitForExpect(() => {
+			expect(route).toHaveBeenCalledWith('nextHotspotView')
+		})
 	});
-
-	it.skip('shows WiFi config screen when help menu was clicked', async () => {
+	//HOTSPOT
+	it('calls hotspot config for iOs and Android when help icon was clicked', async () => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
-		
+		const onToogleHelp= await screen.findByRole('button', {name: /How to configure my WiFi zone/i});
+		fireEvent.click(onToogleHelp);
+		  await waitForExpect(() => {
+		  	expect(route).toHaveBeenCalledWith('./help');
+		 })
 	});
 
-	it.skip('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
-		hasInternet.mockImplementationOnce(() => false)
+	it('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
+		hasInternet.mockImplementationOnce(async () => ({online: 'online'}));
+		hasInternet.mockImplementationOnce(async () => ({offline: 'offline'}));
 		hasInternet.mockImplementation(async() => { throw new Error() })
 		render(<RemoteSupportPage />);
-		expect(await screen.findByText(/Internet access denied/i)).toBeInTheDocument();
-		//expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();
-		const createVerifyButton= await screen.findByRole('button', {name: /verify/i});
-		fireEvent.click(createVerifyButton);
-		expect(await screen.findByText(/something went wrong, there's no internet access/i)).toBeVisible();
+		expect(await screen.findByText(/The node can´t connect to the hotspot network/i)).toBeInTheDocument();
+		expect(await screen.findByRole('button', {name: /verify/i})).toBeDisabled();
 	});
 
-	it.skip('shows a successful message when verify button is clicked and internet connection is back', async() => {
+	it('shows an enabled button to verify hotspot access when its configured', async () =>{
+		hasInternet.mockImplementation(async () => ({online: 'online'}));
+		hasInternet.mockImplementation(async () => ({offline: 'offline'}));
+		render(<RemoteSupportPage />);
+		await flushPromises();
+		expect(await screen.findByRole('button', {name: /verify/i})).toBeEnabled();
+	});
+
+	it('shows a successful message when verify button is clicked and internet connection is back', async() => {
 		hasInternet.mockImplementation(async() => { throw new Success()} )
 		render(<RemoteSupportPage />);
 		//expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();

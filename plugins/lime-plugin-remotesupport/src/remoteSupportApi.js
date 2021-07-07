@@ -2,7 +2,7 @@ import api from 'utils/uhttpd.service';
 
 export function hasInternet(){
 	return api.call("tmate", "has_internet", {})
-		.then(result => (result.hasInternet))
+		.then(result => result.hasInternet ? result.hasInternet.online : result.hasInternet.offline )
 }
 
 export function getSession() {

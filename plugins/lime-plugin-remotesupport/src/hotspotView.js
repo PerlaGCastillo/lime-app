@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useHasInternet } from './remoteSupportQueries';
+import { useHasInternet, useVerifyInternet } from './remoteSupportQueries';
 import { useEffect, useState } from 'preact/hooks';
 import Loading from 'components/loading';
 import I18n from 'i18n-js';
@@ -9,30 +9,30 @@ import style from './style.less';
 
 function hasInternet() {
 	const [hasInternet, setHasInternet] = useState();
-	const verify = useCallback(() => {
-		setHasInternet(navigator.onLine ? "online" : "offline")
+	const verifyInternet = useCallback(() => {
+		setHasInternet(hasInternet.online ? "online" : "offline")
 	}, [hasInternet]);
   
 	return (
 	  <div>
 	  	<p>{hasInternet}</p>
-		<button onClick={verify}>Verify</button>
+		<button onClick={verifyInternet}>Verify</button>
 		{/* <button onClick={() => setHasInternet()}> Verify </button> */}
 	  </div>
 	);
   }
 
-export const hasInternet_ = ({ hasInternet, next}) =>
+export const hasInternet_ = ({ hasInternet, nextHotspotView}) =>
 	<div class="d-flex flex-column flex-grow-1">
 		<h4> Enable Remote Access</h4>
 		<p>{I18n.t('⚠ Your node has no internet connection')}</p>
 		<p>{I18n.t('To enable remote access it\'s necessary being connected to the internet. You can share internet with a cellphone, just click NEXT to see how')}</p>
 		<div class={`d-flex justify-content-center `}>
-			<button onClick={nextInternet}>{I18n.t("Next")}</button>
+			<button onClick={nextHotspotView}>{I18n.t("Next")}</button>
 		</div>
 	</div>
 
-const hotspotView = () => {
+const nextHotspotView = () => {
 	const {data: hasInternet } = useHasInternet();
 
 	useHasInternet(() => {
@@ -53,7 +53,7 @@ const hotspotView = () => {
 		return <div class="container container-center"><Loading /></div>
 	}
 
-	return <hotspotView_  goBack={goBack} />
+	return <nextHotspotView  goBack={goBack} />
 }
 
-export default hotspotView;
+export default nextHotspotView;
