@@ -91,7 +91,7 @@ describe('remote support page', () => {
 			expect(route).toHaveBeenCalledWith('nextHotspotView')
 		})
 	});
-	//HOTSPOT
+	
 	it('calls hotspot config for iOs and Android when help icon was clicked', async () => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
@@ -101,30 +101,21 @@ describe('remote support page', () => {
 		  	expect(route).toHaveBeenCalledWith('./help');
 		 })
 	});
-
-	it('shows a message: WiFi-Denied Access to network when verify button was clicked', async () => {
-		hasInternet.mockImplementationOnce(async () => ({online: 'online'}));
-		hasInternet.mockImplementationOnce(async () => ({offline: 'offline'}));
-		hasInternet.mockImplementation(async() => { throw new Error() })
+	
+	it('shows an error message when verify button was clicked and there`s no internet', async () => {
+		hasInternet.mockImplementationOnce(async () => false);
 		render(<RemoteSupportPage />);
-		expect(await screen.findByText(/The node can´t connect to the hotspot network/i)).toBeInTheDocument();
-		expect(await screen.findByRole('button', {name: /verify/i})).toBeDisabled();
+		const verifyInternetButton = await screen.findByRole('button', {name: /verify/i});
+		fireEvent.click(verifyInternetButton);
+		expect(await screen.findByText(/The node can´t connect to the hotspot network/i)).toBeVisible();
 	});
 
-	it('shows an enabled button to verify hotspot access when its configured', async () =>{
-		hasInternet.mockImplementation(async () => ({online: 'online'}));
-		hasInternet.mockImplementation(async () => ({offline: 'offline'}));
+	//HOTSPOT
+	it.skip('shows a successfull message when verify button is clicked and internet connection is back', async() => {
+		hasInternet.mockImplementationOnce(async () => true);
 		render(<RemoteSupportPage />);
-		await flushPromises();
-		expect(await screen.findByRole('button', {name: /verify/i})).toBeEnabled();
-	});
-
-	it('shows a successful message when verify button is clicked and internet connection is back', async() => {
-		hasInternet.mockImplementation(async() => { throw new Success()} )
-		render(<RemoteSupportPage />);
-		//expect(await screen.findByRole('button', {name: /verify/i })).toBeEnabled();
-		const createVerifyButton = await screen.findByRole('button', {name: /verify/i });
-		fireEvent.click(createVerifyButton);
-		expect(await screen.findByText(/Wi-fi hotspot connected successfully /i)).toBeVisible();
+		const verifyInternetButton = await screen.findByRole('button', {name: /verify/i});
+		fireEvent.click(verifyInternetButton);	
+		expect(await screen.findByText(/Wi-fi hotspot connected successfully/i)).toBeInTheDocument();
 	});
 });

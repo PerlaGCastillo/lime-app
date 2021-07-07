@@ -5,7 +5,6 @@ import {
   useOpenSession,
   useCloseSession,
   useHasInternet,
-  useVerifyInternet,
 } from "./remoteSupportQueries";
 import Loading from "components/loading";
 import I18n from "i18n-js";
@@ -34,9 +33,9 @@ const RemoteSupportPage = () => {
   }
 
   if (verifyInternet) {
-	return (
-		<p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
-	  );
+    return (
+        <p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
+      );
   }
 
   if(showHelp){
@@ -157,16 +156,14 @@ export const RemoteSupportPage_ = ({
         <h4>{I18n.t("Enable Remote Access")}</h4>
         <div class={style.section}>
           <p>{I18n.t("This node has not internet connection")}</p>
-          <p>{I18n.t("You can share it internet with your mobile just click on next button")}</p>
+          <p>{I18n.t("You can share internet with your mobile just click on next button")}</p>
 		      <button onClick={onNextHotspotView}>{I18n.t("next")}</button>
         </div>
 
         <div class={style.section}>
           <h5>{I18n.t("Share internet with a mobile")}</h5>
-          <p>{I18n.t("tutorial text")}</p>
           <button onClick={onToogleHelp}>{I18n.t("How to configure my WiFi zone")}</button>
-          
-          
+          <p>{I18n.t("tutorial text")}</p>     
           <button onClick={verifyInternet}>{I18n.t("Verify")}</button>
           <p>{I18n.t("The node can´t connect to the hotspot network")}</p>
         </div>
