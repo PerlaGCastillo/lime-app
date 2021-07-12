@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from 'react-query';
 import queryCache from 'utils/queryCache';
-import { getSession, openSession, closeSession, hasInternet } from './remoteSupportApi'
+import { getSession, openSession, closeSession, hasInternet, verifyInternet } from './remoteSupportApi'
 
 
 export function useHasInternet() {
@@ -8,10 +8,10 @@ export function useHasInternet() {
 }
 
 export function useVerifyInternet() {
-	return useMutation(hasInternet, {
+	return useMutation(verifyInternet, {
 		onSuccess: () => queryCache.invalidateQueries(["tmate", "has_internet"]),
-		onError: () => queryCache.setQueryData(["tmate", "has_internet"], null)
-	})
+		onError: () => queryCache.setQueryData(["tmate", "has_internet"], false)
+	});
 }
 
 export function useSession(queryConfig) {

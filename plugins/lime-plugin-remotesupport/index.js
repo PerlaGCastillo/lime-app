@@ -12,6 +12,6 @@ export default {
 	isCommunityProtected: true,
 	additionalProtectedRoutes: [
 		['console', ConsoleView],
-		['nextHotspotView', nextHotspotView]
+		['nextHotspotView', nextHotspotView],
 	]
 }

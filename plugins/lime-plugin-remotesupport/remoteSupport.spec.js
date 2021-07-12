@@ -1,23 +1,16 @@
 import { h } from 'preact';
 import { render as tlRender, fireEvent, cleanup, act, screen } from '@testing-library/preact';
 import '@testing-library/jest-dom';
+import { render } from 'utils/test_utils';
+import queryCache from 'utils/queryCache';
 
 import RemoteSupportPage from './src/remoteSupportPage';
-import { getSession, openSession, closeSession , hasInternet } from './src/remoteSupportApi';
-import { ReactQueryCacheProvider } from 'react-query';
-import queryCache from 'utils/queryCache';
+import { getSession, openSession, closeSession, hasInternet } from './src/remoteSupportApi';
 import waitForExpect from 'wait-for-expect';
 import { route } from 'preact-router';
-import nextHotspotView, { hasInternet_ } from './src/hotspotView';
-import { showHelp } from 'yargs';
 
 jest.mock('./src/remoteSupportApi');
 
-const render = (ui) => tlRender(
-	<ReactQueryCacheProvider queryCache={queryCache}>
-		{ui}
-	</ReactQueryCacheProvider>
-)
 
 describe('remote support page', () => {
 	beforeAll(() => {
@@ -25,9 +18,7 @@ describe('remote support page', () => {
 	})
 
 	beforeEach(() => {
-		hasInternet.mockImplementation(async () => 
-			({ online: 'Wi-Fi successfully connected', offline: 'The node can´t connect to the network'})
-		);
+		hasInternet.mockImplementation(async () => true);
 		getSession.mockImplementation(async () =>
 			({ rw_ssh: 'ssh -p2222 test_rw_token@test_host', ro_ssh: 'ssh -p2222 test_ro_token@test_host'})
 		);
@@ -44,7 +35,7 @@ describe('remote support page', () => {
 		jest.useRealTimers();
 	})
 
-	it('shows a button to create session when there is no session', async () => {
+	it('shows a button to create session when no session', async () => {
 		getSession.mockImplementation(async () => null);
 		render(<RemoteSupportPage />);
 		expect(await screen.findByRole('button', {name: /create session/i })).toBeEnabled();
@@ -53,12 +44,12 @@ describe('remote support page', () => {
 	it('shows rw session token when there is an open session', async () => {
 		render(<RemoteSupportPage />);
 		expect(await screen.findByText('ssh -p2222 test_rw_token@test_host')).toBeInTheDocument();
-	})
+	});
 
 	it('shows a button to close session when there is an open session', async () => {
 		render(<RemoteSupportPage />);
 		expect(await screen.findByRole('button', {name: /close session/i})).toBeEnabled();
-	})
+	});
 
 	it('shows rw session token after clicking on open session', async() => {
 		getSession
@@ -78,44 +69,22 @@ describe('remote support page', () => {
 
 	it('shows connection guide to hotspot when there is no internet', async () => {
 		hasInternet.mockImplementation(async () => false);
+		getSession.mockImplementationOnce(async () => null);
 		render(<RemoteSupportPage />);
 		expect(await screen.findByText(/This node has not internet connection/i)).toBeInTheDocument();	
+		expect(await screen.findByText(/To enable remote access it's necessary to be connected to the internet. You can share internet with a cellphone, just click NEXT to see how/i)).toBeInTheDocument();	
+		expect(await screen.findByRole('button', {name: /next/i})).toBeEnabled();
+		expect(screen.queryByRole('button', {name: /create session/i})).toBeNull();
 	});
 	
-	it('shows share internet with a mobile screen tutorial after next button was clicked', async() => {
+	it('redirects to share internet with a mobile screen tutorial when clicking in next button', async() => {
 		hasInternet.mockImplementation(async () => false);
 		render(<RemoteSupportPage />);
-		const onNextHotspotView = await screen.findByRole('button', {name: /next/i});
-		fireEvent.click(onNextHotspotView);
+		const nextButton = await screen.findByRole('button', {name: /next/i});
+		fireEvent.click(nextButton);
 		await waitForExpect(() => {
-			expect(route).toHaveBeenCalledWith('nextHotspotView')
-		})
-	});
-	
-	it('calls hotspot config for iOs and Android when help icon was clicked', async () => {
-		hasInternet.mockImplementation(async () => false);
-		render(<RemoteSupportPage />);
-		const onToogleHelp= await screen.findByRole('button', {name: /How to configure my WiFi zone/i});
-		fireEvent.click(onToogleHelp);
-		  await waitForExpect(() => {
-		  	expect(route).toHaveBeenCalledWith('./help');
-		 })
-	});
-	
-	it('shows an error message when verify button was clicked and there`s no internet', async () => {
-		hasInternet.mockImplementationOnce(async () => false);
-		render(<RemoteSupportPage />);
-		const verifyInternetButton = await screen.findByRole('button', {name: /verify/i});
-		fireEvent.click(verifyInternetButton);
-		expect(await screen.findByText(/The node can´t connect to the hotspot network/i)).toBeVisible();
+			expect(route).toHaveBeenCalledWith('hotspot-guide');
+		});
 	});
 
-	//HOTSPOT
-	it.skip('shows a successfull message when verify button is clicked and internet connection is back', async() => {
-		hasInternet.mockImplementationOnce(async () => true);
-		render(<RemoteSupportPage />);
-		const verifyInternetButton = await screen.findByRole('button', {name: /verify/i});
-		fireEvent.click(verifyInternetButton);	
-		expect(await screen.findByText(/Wi-fi hotspot connected successfully/i)).toBeInTheDocument();
-	});
 });

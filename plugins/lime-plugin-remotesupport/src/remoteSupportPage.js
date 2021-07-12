@@ -4,13 +4,11 @@ import {
   useSession,
   useOpenSession,
   useCloseSession,
-  useHasInternet,
+  useHasInternet
 } from "./remoteSupportQueries";
 import Loading from "components/loading";
 import I18n from "i18n-js";
 import style from "./style.less";
-import {help, toogleHelp, showHelp} from "components/help";
-import {nextHotspotView}  from "./hotspotView";
 
 const RemoteSupportPage = () => {
   const { data: session, isLoading: loadingSession, isError } = useSession({
@@ -18,35 +16,14 @@ const RemoteSupportPage = () => {
   });
   const [openSession, openStatus] = useOpenSession();
   const [closeSession, closeStatus] = useCloseSession();
-  const { data: hasInternet, verifyInternet, showHelp } = useHasInternet();
+  const { data: hasInternet, isLoading: loadingHasInternet } = useHasInternet();
+
+  function onNextHotspotView() {
+    route("hotspot-guide");
+  }
 
   function onShowConsole() {
     route("console");
-  }
-
-  function onNextHotspotView() {
-    route("nextHotspotView");
-  }
-
-  function onToogleHelp() {
-    route("./help");
-  }
-
-  if (verifyInternet) {
-    return (
-        <p>{I18n.t("Wi-fi hotspot connected successfully")}</p>
-      );
-  }
-
-  if(showHelp){
-    return(
-				<div>
-					<h4>{I18n.t('Set up HotSpot network for iOs')}</h4>
-					<p>{I18n.t('Config > Share internet > Let others to connect > WiFi password > password: internet')}</p>
-					<h4>{I18n.t('Set up HotSpot network for Android')}</h4>
-					<p>{I18n.t('To Create a hotspot network, look up for some of the following options in your phone: Shared connection, WiFi Zone, tether to network, HotSpot, Access Point')}</p>
-				</div> 
-    );
   }
 
   if (isError) {
@@ -57,7 +34,7 @@ const RemoteSupportPage = () => {
     );
   }
 
-  if (loadingSession) {
+  if (loadingSession || loadingHasInternet) {
     return (
       <div class="container container-center">
         <Loading />
@@ -75,11 +52,7 @@ const RemoteSupportPage = () => {
       onShowConsole={onShowConsole}
       hasInternet={hasInternet}
 	    onNextHotspotView={onNextHotspotView}
-	    onToogleHelp={onToogleHelp}
-      showHelp={showHelp}
-	    verifyInternet={verifyInternet}
-
-    />
+      />
   );
 };
 
@@ -91,11 +64,15 @@ export const RemoteSupportPage_ = ({
   onCloseSession,
   onShowConsole,
   hasInternet,
-  verifyInternet = false,
-  onNextHotspotView,
-  onToogleHelp,
-  showHelp,
-}) => (
+  onNextHotspotView,  
+}) => {
+  if (hasInternet) {
+    return <WithInternet {...{session, openError, isSubmitting, onOpenSession, onCloseSession, onShowConsole}} />;
+  }
+  return <WithoutInternet onNextHotspotView={onNextHotspotView} />;
+}
+
+const WithInternet = ({ session, openError, isSubmitting, onOpenSession, onCloseSession, onShowConsole}) => (
   <div class="d-flex flex-grow-1 flex-column container container-padded">
     <h4>{I18n.t("Ask for remote support")}</h4>
     {!session && (
@@ -151,24 +128,17 @@ export const RemoteSupportPage_ = ({
       </div>
     )}
     {isSubmitting && <Loading />}
-    {!hasInternet && (
-      <div>
-        <h4>{I18n.t("Enable Remote Access")}</h4>
-        <div class={style.section}>
-          <p>{I18n.t("This node has not internet connection")}</p>
-          <p>{I18n.t("You can share internet with your mobile just click on next button")}</p>
-		      <button onClick={onNextHotspotView}>{I18n.t("next")}</button>
-        </div>
+  </div>
+);
 
-        <div class={style.section}>
-          <h5>{I18n.t("Share internet with a mobile")}</h5>
-          <button onClick={onToogleHelp}>{I18n.t("How to configure my WiFi zone")}</button>
-          <p>{I18n.t("tutorial text")}</p>     
-          <button onClick={verifyInternet}>{I18n.t("Verify")}</button>
-          <p>{I18n.t("The node can´t connect to the hotspot network")}</p>
-        </div>
-      </div>
-    )}
+const WithoutInternet = ({ onNextHotspotView }) => (
+  <div class="d-flex flex-grow-1 flex-column container container-padded">
+    <h4>{I18n.t("Enable Remote Access")}</h4>
+    <div class={style.section}>
+      <p>{I18n.t("This node has not internet connection")}</p>
+      <p>{I18n.t("To enable remote access it's necessary to be connected to the internet. You can share internet with a cellphone, just click NEXT to see how")}</p>
+      <button onClick={onNextHotspotView}>{I18n.t("next")}</button>
+    </div>
   </div>
 );
 

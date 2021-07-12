@@ -1,9 +1,6 @@
-import { scanningForNetworks } from 'plugins/lime-plugin-fbw/fbw.scan.stories';
-import { searchNetworks } from 'plugins/lime-plugin-fbw/src/api';
 import api from 'utils/uhttpd.service';
-import { hasInternet_ } from './hotspotView';
 
-jest.mock('utils/uhttpd.service')
+jest.mock('utils/uhttpd.service');
 
 import { getSession, openSession, closeSession, hasInternet, verifyInternet } from './remoteSupportApi';
 
@@ -11,63 +8,6 @@ beforeEach(() => {
     api.call.mockClear();
     api.call.mockImplementation(async () => ({ status: 'ok' }));
 })
-
- 
-describe('hasInternet', () => {
-    it('calls the expected endpoint', async () => {
-        await hasInternet();
-        expect(api.call).toBeCalledWith('tmate','has_internet', {});
-    })
-
-    it('resolves to internet status when there is a connected node', async () => {
-        const hasInternetData={
-            online: 'online', offline: 'Your node has no internet connection' };
-        api.call.mockImplementation(async () => (
-            {
-                status: 'ok',
-                online: hasInternetData,
-            }));
-        let online = await hasInternet();
-        expect(online).toEqual(hasInternetData);
-    });
-
-    it('resolves to null when there is no internet', async () => {
-        const hasInternetData = 'this node has not internet connection';
-        api.call.mockImplementation(async () => (
-            {
-                status: 'ok',
-                online: hasInternetData,
-            }));
-        let online = await hasInternet();
-        expect(online).toBeNull();
-    });
-
-});
-
-describe('verifyInternet', () => {
-    it('calls the expected endpoint', async () => {
-        await hasInternet();
-        expect(api.call).toBeCalledWith('tmate', 'has_Internet', {})
-    })
-
-    it('resolves to has Internet on success', async () => {
-        const hasInternet = await hasInternet();
-        expect(hasInternet).toEqual({ status: 'ok'})
-    })
-
-    it('resolves to has Internet on success', async () => {
-        const hasInternet = await hasInternet();
-        expect(hasInternet).toBeNull();
-    })
-
-});
-
-describe('nextHotspotView', () => {
-    it('calls the expected view', async () => {
-        await nextHotspotView();
-        expect(api.call).toBeCalledWith('tmate', 'get_hotspotview', {})
-    })
-});
  
 describe('getSession', () => {
     it('calls the expected endpoint', async () => {
@@ -153,4 +93,56 @@ describe('openSession', () => {
             expect(api.call).toBeCalledWith('tmate', 'close_session', {})
         }
     })
+});
+
+describe('hasInternet', () => {
+    it('calls the expected endpoint', async () => {
+        await hasInternet();
+        expect(api.call).toBeCalledWith('tmate','has_internet', {});
+    });
+
+    it('resolves to true when the node has internet connection', async () => {
+        api.call.mockImplementation(async () => (
+            {
+                status: 'ok',
+                has_internet: true,
+            }));
+        expect(await hasInternet()).toEqual(true);
+    });
+
+    it('resolves to false when there is no internet', async () => {
+        api.call.mockImplementation(async () => (
+            {
+                status: 'ok',
+                has_internet: false,
+            }));
+        expect(await hasInternet()).toEqual(false);
+    });
+
+});
+
+describe('verifyInternet', () => {
+    it('calls the expected endpoint', async () => {
+        await verifyInternet();
+        expect(api.call).toBeCalledWith('wifi-client', 'connect', {})
+    })
+
+    it('resolves to true on success', async () => {
+        api.call.mockImplementation(async () => (
+            {
+                status: 'ok',
+                connected: true,
+            }));
+        expect(await verifyInternet()).toEqual(true);
+    });
+
+    it('rejects when node cant connect to hotspot', async () => {
+        api.call.mockImplementation(async() => Promise.reject("Can't connect to defaut network"));
+        expect.assertions(1);
+        try {
+            await verifyInternet();
+        } catch (e) {
+            expect(e).toEqual("Can't connect to defaut network");
+        }
+    });
 });
