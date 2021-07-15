@@ -1,26 +1,53 @@
 import {h} from 'preact'; 
-import I18n from 'i18n-js';
-import { useState } from 'preact/hooks';
-import { useHasInternet } from './remoteSupportQueries';
 import { route } from 'preact-router';
+import { 
+	useHasInternet, 
+	useVerifyInternet 
+} from './remoteSupportQueries';
+import Loading from 'components/loading';
+import I18n from 'i18n-js';
 import style from './style.less';
-import { hasInternet } from './remoteSupportApi';
+import RemoteSupportPage, { RemoteSupportPage_ } from './remoteSupportPage';
+import { hasInternet_ } from './hotspotView';
 
-//TODO refactor: dirty implementation
-const hasInternetStatus = ({hasInternet}) => {
-	const [hasInternet, setHasInternet] = useState('');
-	const verify = useCallback(() => {
-		setHasInternet(navigator.onLine ? "online" : "offline")
-	}, [hasInternet]);
 
-	const [showHelp, setShowHelp] = useState('');
+const HotspotPage = () => {
+	const {data: hasInternet, isLoading: loadingHasInternet } = useHasInternet();
+	const [verifyInternet, verifyInternetStatus] = useVerifyInternet();
+	const [showHelp] = showHelp();
 	
 	function toogleHelp(e) {
 		e.preventDefault();
 		setShowHelp(prevValue => !prevValue);
 	}
 
+	if (loadingHasInternet) {
+		return (
+		  <div class="container container-center">
+			<Loading />
+		  </div>
+		);
+	  }
+
+
 	return (
+		// hotspotGuide_ ¿?
+		<HotspotPage_
+		verifyInternet = {verifyInternet}
+		/>
+	);
+};
+
+	export const HotspotPage_ = ({
+		verifyInternet,
+	}) => {
+		if(verifyInternet){
+			return<WithHotspot {...{ toogleHelp, hasInternet} }/>;
+		}
+		return <WithoutHotspot verify={verify} />;
+	}
+
+	const WithHotspot = ({ toogleHelp, hasInternet}) => (
 		<div className="container container-padded">
 		<p>{I18n.t('Share internet with a mobile phone')}</p>
 					<p>{I18n.t('To share internet to the node with a mobile phone follow these steps:')}</p>
@@ -44,6 +71,10 @@ const hasInternetStatus = ({hasInternet}) => {
 					<p>{I18n.t('Wi-Fi Hotspot successfully connected')}</p>
 				</div>
 			}
+			</div>
+	);
+	const WithoutHotspot = ({verify}) =>(
+		<div className="container container-padded">
 			{!hasInternet &&
 				<div>
 					<button onClick={verify}> {I18n.t('Verify')}</button>
@@ -52,7 +83,6 @@ const hasInternetStatus = ({hasInternet}) => {
 			}
 		</div>
 	);
-};
 
-export default hasInternetStatus;
+export default HotspotPage;
 

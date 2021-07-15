@@ -1,7 +1,6 @@
 import { h } from 'preact';
 import { render as tlRender, fireEvent, cleanup, act, screen } from '@testing-library/preact';
 import '@testing-library/jest-dom';
-
 import RemoteSupportPage from './src/remoteSupportPage';
 import { getSession, openSession, closeSession , hasInternet } from './src/remoteSupportApi';
 import { ReactQueryCacheProvider } from 'react-query';
@@ -34,7 +33,7 @@ describe('remote support page', () => {
 		);
 		openSession.mockImplementation(async () => null);
 		closeSession.mockImplementation(async () => null);
-	});
+ 	});
 
 	afterEach(() => {
 		cleanup();
@@ -85,7 +84,7 @@ describe('remote support page', () => {
         render(<RemoteSupportPage />);
         const verifyInternetButton = await screen.findByRole('button', {name: /verify/i});
         fireEvent.click(verifyInternetButton);	
-        expect(await screen.findByText(/Wi-fi hotspot connected successfully/i)).toBeVisible();
+        expect(await screen.findByText(/Wi-Fi Hotspot successfully connected/i)).toBeVisible();
     });
 
 	it('shows an error message when verify button was clicked and there`s no internet', async () => {

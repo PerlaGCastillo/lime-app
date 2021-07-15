@@ -66,9 +66,9 @@ export const RemoteSupportPage_ = ({
   hasInternet,
   onNextHotspotView,  
 }) => {
-  if (hasInternet) {
+  if (hasInternet)  {
     return <WithInternet {...{session, openError, isSubmitting, onOpenSession, onCloseSession, onShowConsole}} />;
-  }
+  } 
   return <WithoutInternet onNextHotspotView={onNextHotspotView} />;
 }
 

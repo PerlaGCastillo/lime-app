@@ -1,4 +1,5 @@
 import api from 'utils/uhttpd.service';
+import hotspotPage from './hostpotPage';
 
 jest.mock('utils/uhttpd.service');
 
@@ -137,12 +138,12 @@ describe('verifyInternet', () => {
     });
 
     it('rejects when node cant connect to hotspot', async () => {
-        api.call.mockImplementation(async() => Promise.reject("Can't connect to defaut network"));
+        api.call.mockImplementation(async() => Promise.reject("Can't connect to default network"));
         expect.assertions(1);
         try {
             await verifyInternet();
         } catch (e) {
-            expect(e).toEqual("Can't connect to defaut network");
+            expect(e).toEqual("Can't connect to default network");
         }
     });
 });
